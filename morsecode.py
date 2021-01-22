@@ -51,9 +51,10 @@ def is_help_command(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
-    return result
+    if user_input.upper() == 'H' or user_input.upper() == 'HELP':
+        return True
+    else:
+        return False
     # ==================================
 
 
@@ -83,9 +84,15 @@ def is_validated_english_sentence(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
-    return result
+    for c in user_input:
+        if not(c.isalpha() or c in '.,!? '):
+            return False
+    mark = '.,!? '
+    for m in mark:
+        user_input = user_input.replace(m, '')
+    if user_input == '':
+        return False
+    return True
     # ==================================
 
 
@@ -114,9 +121,12 @@ def is_validated_morse_code(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
-    return result
+    li = user_input.split(' ')
+    morse = get_morse_code_dict().values()
+    for l in li:
+        if l not in morse and l != '':
+            return False
+    return True
     # ==================================
 
 
@@ -140,8 +150,13 @@ def get_cleaned_english_sentence(raw_english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
+    result = raw_english_sentence.strip()
+    for m in ".,!?":
+        result = result.replace(m, '')
+    li = result.split(' ')
+    while '' in li:
+        li.remove('') 
+    result = ' '.join(li)
     return result
     # ==================================
 
@@ -170,9 +185,10 @@ def decoding_character(morse_character):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
     morse_code_dict = get_morse_code_dict()
-    result = None
-
-    return result
+    for key, value in morse_code_dict.items():
+        if value == morse_character:
+            return key
+    return 'Error'
     # ==================================
 
 
@@ -200,9 +216,7 @@ def encoding_character(english_character):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
     morse_code_dict = get_morse_code_dict()
-    result = None
-
-    return result
+    return morse_code_dict[english_character.upper()]
     # ==================================
 
 
@@ -225,8 +239,13 @@ def decoding_sentence(morse_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
+    result = ""
+    li = morse_sentence.split(' ')
+    for l in li:
+        if l == '':
+            result += ' '
+        else:
+            result += decoding_character(l)
     return result
     # ==================================
 
@@ -251,8 +270,14 @@ def encoding_sentence(english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = None
-
+    result = ""
+    clean_sentence = get_cleaned_english_sentence(english_sentence)
+    for c in clean_sentence:
+        if c == ' ':
+            result += c
+        else:
+            result += encoding_character(c) + ' '
+    result.strip()
     return result
     # ==================================
 
@@ -260,8 +285,18 @@ def encoding_sentence(english_sentence):
 def main():
     print("Morse Code Program!!")
     # ===Modify codes below=============
-
-
+    while True:
+        i = input('Input your message(H - Help, 0 - Exit): ')
+        if i == '0':
+            break
+        elif is_help_command(i):
+            print(get_help_message())
+        elif is_validated_english_sentence(i):
+            print(encoding_sentence(i))
+        elif is_validated_morse_code(i):
+            print(decoding_sentence(i))
+        else:
+            print('Wrong Input')
 
     # ==================================
     print("Good Bye")
